@@ -137,7 +137,8 @@ const Lecture = () => {
 
   const handleVideoEnded = async (id) => {
     // If not completed, mark complete
-    if (user && !user.completedLectures?.includes(id)) {
+    const completedStrings = user?.completedLectures?.map(String) || [];
+    if (user && !completedStrings.includes(id.toString())) {
       await toggleProgress(id);
       toast.success("Lesson completed!");
     }
@@ -156,8 +157,9 @@ const Lecture = () => {
   const hasNext = currentIdx !== -1 && currentIdx < lectures.length - 1;
 
   // Calculate dynamic progress
+  const completedStrings = user?.completedLectures?.map(String) || [];
   const completedInThisCourse = lectures.filter((l) =>
-    user?.completedLectures?.includes(l._id)
+    completedStrings.includes(l._id?.toString())
   );
   const progressPercentage =
     lectures.length > 0
@@ -208,7 +210,8 @@ const Lecture = () => {
               <div className="sidebar-lectures-list">
                 {lectures && lectures.length > 0 ? (
                   lectures.map((lec, i) => {
-                    const isCompleted = user?.completedLectures?.includes(lec._id);
+                    const completedStrings = user?.completedLectures?.map(String) || [];
+                    const isCompleted = completedStrings.includes(lec._id?.toString());
                     const isActive = lecture?._id === lec._id;
 
                     return (
@@ -292,10 +295,10 @@ const Lecture = () => {
                         </Button>
 
                         <Button
-                          variant={user?.completedLectures?.includes(lecture._id) ? "secondary" : "primary"}
+                          variant={(user?.completedLectures?.map(String) || []).includes(lecture._id?.toString()) ? "secondary" : "primary"}
                           onClick={() => toggleProgress(lecture._id)}
                         >
-                          {user?.completedLectures?.includes(lecture._id) ? "Mark Incomplete" : "Mark as Completed"}
+                          {(user?.completedLectures?.map(String) || []).includes(lecture._id?.toString()) ? "Mark Incomplete" : "Mark as Completed"}
                         </Button>
 
                         <Button
