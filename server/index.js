@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectDb } from "./database/db.js";
-import Razorpay from "razorpay";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
@@ -11,14 +10,12 @@ dotenv.config();
 const uploadDir = path.join(path.resolve(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("✅ 'uploads' directory created.");
 } else {
-  console.log(".");
+  console.log("✅ 'uploads' directory already exists.");
 }
 
-export const instance = new Razorpay({
-  key_id: process.env.Razorpay_key,
-  key_secret: process.env.Razorpay_Secret,
-});
+import { instance } from "./config/razorpay.js";
 
 const app = express();
 

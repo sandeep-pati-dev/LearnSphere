@@ -4,8 +4,10 @@ import { server } from "../../main";
 import { UserData } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios from "axios";
+import api from "../../api";
 import { CourseData } from "../../context/CourseContext";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
@@ -16,11 +18,7 @@ const CourseCard = ({ course }) => {
   const deleteHandler = async (id) => {
     if (confirm("Are you sure you want to delete this course")) {
       try {
-        const { data } = await axios.delete(`${server}/api/course/${id}`, {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
-        });
+        const { data } = await api.delete(`/course/${id}`);
 
         toast.success(data.message);
         fetchCourses();
@@ -30,8 +28,8 @@ const CourseCard = ({ course }) => {
     }
   };
   return (
-    <div className="course-card">
-      <img src={`${server}/${course.image}`} alt="" className="course-image" />
+    <Card className="course-card">
+      <img src={course.image && course.image.startsWith("http") ? course.image : `${server}/${course.image}`} alt={course.title} className="course-image" loading="lazy" />
       <h3>{course.title}</h3>
       <p>Instructor- {course.createdBy}</p>
       <p>Duration- {course.duration} weeks</p>
@@ -41,48 +39,44 @@ const CourseCard = ({ course }) => {
           {user && user.role !== "admin" ? (
             <>
               {user.subscription.includes(course._id) ? (
-                <button
+                <Button
                   onClick={() => navigate(`/course/study/${course._id}`)}
-                  className="btn"
                 >
                   Study
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
                   onClick={() => navigate(`/course/${course._id}`)}
-                  className="btn"
                 >
                   Get Started
-                </button>
+                </Button>
               )}
             </>
           ) : (
-            <button
+            <Button
               onClick={() => navigate(`/course/study/${course._id}`)}
-              className="btn"
             >
               Study
-            </button>
+            </Button>
           )}
         </>
       ) : (
-        <button onClick={() => navigate("/login")} className="btn">
+        <Button onClick={() => navigate("/login")}>
           Get Started
-        </button>
+        </Button>
       )}
 
       <br />
 
       {user && user.role === "admin" && (
-        <button
+        <Button
           onClick={() => deleteHandler(course._id)}
-          className="btn"
-          style={{ background: "red" }}
+          variant="danger"
         >
           Delete
-        </button>
+        </Button>
       )}
-    </div>
+    </Card>
   );
 };
 

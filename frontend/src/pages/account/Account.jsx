@@ -4,11 +4,13 @@ import { CiLogout } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import "./account.css";
 import { UserData } from "../../context/UserContext";
+import { CourseData } from "../../context/CourseContext";
 import toast from "react-hot-toast";
 
 const Account = ({ user }) => {
   const navigate = useNavigate();
   const { setIsAuth, setUser } = UserData();
+  const { setMyCourse } = CourseData();
 
   if (!user) {
     return <h2>Loading...</h2>;
@@ -17,7 +19,8 @@ const Account = ({ user }) => {
   const logoutHandler = () => {
     localStorage.removeItem("token");
     setIsAuth(false);
-    setUser([]);
+    setUser(null);
+    setMyCourse([]);
     navigate("/login");
     toast.success("Logged Out");
   };

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./users.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { server } from "../../main";
+import api from "../../api";
 import Layout from "../Utils/Layout";
 import toast from "react-hot-toast";
+import Button from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
 
 const AdminUsers = ({ user }) => {
   const navigate = useNavigate();
@@ -19,12 +20,7 @@ const AdminUsers = ({ user }) => {
 
   async function fetchUsers() {
     try {
-      const { data } = await axios.get(`${server}/api/user`, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
-
+      const { data } = await api.get("/user");
       setUsers(data.users);
     } catch (error) {
       console.error(error);
@@ -38,15 +34,7 @@ const AdminUsers = ({ user }) => {
   const updateRole = async (id) => {
     if (window.confirm("Are you sure you want to update this user's role?")) {
       try {
-        const { data } = await axios.put(
-          `${server}/api/user/${id}`,
-          {},
-          {
-            headers: {
-              token: localStorage.getItem("token"),
-            },
-          }
-        );
+        const { data } = await api.put(`/user/${id}`, {});
 
         toast.success(data.message);
         fetchUsers();
@@ -59,11 +47,11 @@ const AdminUsers = ({ user }) => {
   return (
     <Layout>
       <div className="users">
-        <h1>All Users</h1>
-        <div className="table-container">
-          <table border="1">
+        <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>All Users</h1>
+        <Card className="table-container">
+          <table border="1" style={{ borderCollapse: "collapse", width: "100%", border: "1px solid rgba(255,255,255,0.05)" }}>
             <thead>
-              <tr>
+              <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                 <th>#</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -80,12 +68,13 @@ const AdminUsers = ({ user }) => {
                     <td>{e.email}</td>
                     <td>{e.role}</td>
                     <td>
-                      <button
+                      <Button
                         onClick={() => updateRole(e._id)}
-                        className="common"
+                        variant="primary"
+                        style={{ padding: "6px 12px", fontSize: "14px" }}
                       >
                         Update Role
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -96,7 +85,7 @@ const AdminUsers = ({ user }) => {
               )}
             </tbody>
           </table>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

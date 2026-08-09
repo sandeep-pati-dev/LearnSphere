@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import "./auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { UserData } from "../../context/UserContext";
+import Card from "../../components/ui/Card";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -17,45 +20,47 @@ const Register = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-form">
+      <Card className="auth-form">
         <h2>Register</h2>
         <form onSubmit={submitHandler}>
-          {" "}
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
+          <Input
+            label="Name"
             id="name"
-            name="name"
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            placeholder="John Doe"
           />
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
+
+          <Input
+            label="Email"
             id="email"
-            name="email"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            placeholder="name@example.com"
           />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
+
+          <Input
+            label="Password"
             id="password"
-            name="password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            placeholder="••••••••"
           />
-          <button className="btn" type="submit" disabled={btnLoading}>
+
+          <Button type="submit" disabled={btnLoading} style={{ width: "100%", marginTop: "10px" }}>
             {btnLoading ? "Please Wait..." : "Register"}
-          </button>
+          </Button>
         </form>
         <p>
           Have an account? <Link to="/login">Login</Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 };

@@ -8,17 +8,25 @@ const CourseStudy = ({ user }) => {
   const params = useParams();
   const { fetchCourse, course } = CourseData();
   const navigate = useNavigate();
-  if (user && user.role !== "admin" && !user.subscription.includes(params.id))
-    return navigate("/");
+  useEffect(() => {
+    if (user && user.role !== "admin" && !user.subscription.includes(params.id)) {
+      navigate("/");
+    }
+  }, [user, params.id, navigate]);
+
   useEffect(() => {
     fetchCourse(params.id);
   }, []);
+
+  if (user && user.role !== "admin" && !user.subscription.includes(params.id)) {
+    return null;
+  }
 
   return (
     <>
       {course && (
         <div className="course-study-page">
-          <img src={`${server}/${course.image}`} alt="" />
+          <img src={course.image && course.image.startsWith("http") ? course.image : `${server}/${course.image}`} alt="" />
           <h2>{course.title}</h2>
           <h4>{course.description}</h4>
           <h5>by - {course.createdBy}</h5>

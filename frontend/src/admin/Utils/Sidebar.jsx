@@ -1,12 +1,29 @@
 import React from "react";
 import "./common.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiFillHome, AiOutlineLogout } from "react-icons/ai";
 import { FaBook, FaUserAlt } from "react-icons/fa";
+import { UserData } from "../../context/UserContext";
+import { CourseData } from "../../context/CourseContext";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const { setUser, setIsAuth } = UserData();
+  const { setMyCourse } = CourseData();
+
+  const logoutHandler = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    setIsAuth(false);
+    setUser(null);
+    setMyCourse([]);
+    navigate("/login");
+    toast.success("Logged Out");
+  };
+
   return (
-    <div className="sidebar">
+    <nav className="sidebar" aria-label="Admin navigation">
       <ul>
         <li>
           <Link to={"/admin/dashboard"}>
@@ -36,7 +53,7 @@ const Sidebar = () => {
         </li>
 
         <li>
-          <Link to={"/account"}>
+          <Link to="#" onClick={logoutHandler}>
             <div className="icon">
               <AiOutlineLogout />
             </div>
@@ -44,7 +61,7 @@ const Sidebar = () => {
           </Link>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 };
 

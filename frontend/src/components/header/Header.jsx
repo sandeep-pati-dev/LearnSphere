@@ -69,9 +69,22 @@ const Header = ({ isAuth }) => {
       )}
 
       {/* Menu Icon */}
-      <div className="menu-icon" onClick={toggleMenu}>
+      <button
+        className="menu-icon"
+        onClick={toggleMenu}
+        aria-label="Toggle navigation menu"
+        aria-expanded={isMenuOpen}
+        style={{
+          background: "none",
+          border: "none",
+          color: "#fff",
+          fontSize: "2rem",
+          cursor: "pointer",
+          padding: 0
+        }}
+      >
         <i className={`fa-solid ${isMenuOpen ? "fa-xmark" : "fa-bars"}`}></i>
-      </div>
+      </button>
     </header>
   );
 };

@@ -1,18 +1,25 @@
-// src/pages/AdminCourses.js
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../Utils/Layout";
 import { useNavigate } from "react-router-dom";
 import { CourseData } from "../../context/CourseContext";
 import CourseCard from "../../components/coursecard/CourseCard";
 import "./admincourses.css";
 import toast from "react-hot-toast";
-import axios from "axios";
-import { server } from "../../main";
+import api from "../../api";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Card from "../../components/ui/Card";
 
 const AdminCourses = ({ user }) => {
   const navigate = useNavigate();
-  if (user && user.role !== "admin") return navigate("/");
+
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  if (user && user.role !== "admin") return null;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -24,23 +31,26 @@ const AdminCourses = ({ user }) => {
   const [imagePrev, setImagePrev] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
 
-  const { courses, fetchCourses } = CourseData();
-
   const changeImageHandler = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
+
     reader.readAsDataURL(file);
+
     reader.onloadend = () => {
       setImagePrev(reader.result);
       setImage(file);
     };
   };
 
+  const { courses, fetchCourses } = CourseData();
+
   const submitHandler = async (e) => {
     e.preventDefault();
     setBtnLoading(true);
 
     const myForm = new FormData();
+
     myForm.append("title", title);
     myForm.append("description", description);
     myForm.append("category", category);
@@ -50,11 +60,7 @@ const AdminCourses = ({ user }) => {
     myForm.append("file", image);
 
     try {
-      const { data } = await axios.post(`${server}/api/course/new`, myForm, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
+      const { data } = await api.post("/course/new", myForm);
 
       toast.success(data.message);
       setBtnLoading(false);
@@ -68,7 +74,7 @@ const AdminCourses = ({ user }) => {
       setPrice("");
       setCategory("");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Course creation failed");
       setBtnLoading(false);
     }
   };
@@ -78,79 +84,99 @@ const AdminCourses = ({ user }) => {
       <div className="admin-courses">
         <div className="right">
           <div className="add-course">
-            <div className="course-form">
-              <h2>Add Course</h2>
+            <Card className="course-form">
+              <h2 style={{ marginBottom: "20px", fontSize: "24px" }}>Add Course</h2>
               <form onSubmit={submitHandler}>
-                <label>Title</label>
-                <input
+                <Input
+                  label="Title"
+                  id="title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
                 />
 
-                <label>Description</label>
-                <input
+                <Input
+                  label="Description"
+                  id="description"
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
                 />
 
-                <label>Price</label>
-                <input
+                <Input
+                  label="Price"
+                  id="price"
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
                 />
 
-                <label>Created By</label>
-                <input
+                <Input
+                  label="Created By"
+                  id="createdBy"
                   type="text"
                   value={createdBy}
                   onChange={(e) => setCreatedBy(e.target.value)}
                   required
                 />
 
-                <label>Category</label>
-                <input
+                <Input
+                  label="Category"
+                  id="category"
                   type="text"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
                 />
 
-                <label>Duration (weeks)</label>
-                <input
+                <Input
+                  label="Duration (weeks)"
+                  id="duration"
                   type="number"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   required
                 />
 
-                <input type="file" required onChange={changeImageHandler} />
-                {imagePrev && <img src={imagePrev} alt="preview" width={300} />}
+                <div className="common-form-group" style={{ marginBottom: "15px", display: "flex", flexDirection: "column", textAlign: "left" }}>
+                  <label htmlFor="file" style={{ marginBottom: "5px", fontWeight: "600", fontSize: "14px" }}>Course Thumbnail</label>
+                  <input
+                    type="file"
+                    id="file"
+                    required
+                    onChange={changeImageHandler}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      backgroundColor: "#1e1e38",
+                      color: "white"
+                    }}
+                  />
+                </div>
 
-                <button type="submit" disabled={btnLoading} className="btn">
-                  {btnLoading ? "Please Wait..." : "Add"}
-                </button>
+                {imagePrev && <img src={imagePrev} alt="" width={300} style={{ borderRadius: "8px", marginBottom: "15px" }} />}
+
+                <Button type="submit" disabled={btnLoading} style={{ width: "100%", marginTop: "10px" }}>
+                  {btnLoading ? "Please Wait..." : "Add Course"}
+                </Button>
               </form>
-            </div>
+            </Card>
           </div>
         </div>
-        <br />
-        <br />
-        <br />
         <div className="left">
-          <div className="course-scroll-container">
-            <div className="dashboard-content">
-              {courses && courses.length > 0 ? (
-                courses.map((e) => <CourseCard key={e._id} course={e} />)
-              ) : (
-                <p>No Courses Yet</p>
-              )}
-            </div>
+          <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>All Courses</h1>
+          <div className="dashboard-content">
+            {courses && courses.length > 0 ? (
+              courses.map((e) => {
+                return <CourseCard key={e._id} course={e} />;
+              })
+            ) : (
+              <p>No Courses Yet</p>
+            )}
           </div>
         </div>
       </div>

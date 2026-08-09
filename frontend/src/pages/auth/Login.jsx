@@ -3,6 +3,9 @@ import "./auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { UserData } from "../../context/UserContext";
 import { CourseData } from "../../context/CourseContext";
+import Card from "../../components/ui/Card";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,37 +22,37 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-form">
+      <Card className="auth-form">
         <h2>Login</h2>
         <form onSubmit={submitHandler}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
+          <Input
+            label="Email"
             id="email"
-            name="email"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            placeholder="name@example.com"
           />
 
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
+          <Input
+            label="Password"
             id="password"
-            name="password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            placeholder="••••••••"
           />
 
-          <button disabled={btnLoading} className="btn" type="submit">
-            {btnLoading ? "Please Wait" : "Login"}
-          </button>
+          <Button disabled={btnLoading} type="submit" style={{ width: "100%", marginTop: "10px" }}>
+            {btnLoading ? "Please Wait..." : "Login"}
+          </Button>
         </form>
         <p>
           Don't have an account? <Link to="/register">Register</Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 };
