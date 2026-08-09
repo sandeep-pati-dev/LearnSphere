@@ -1,5 +1,6 @@
 import axios from "axios";
-import { server } from "./main.jsx";
+
+export const server = "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${server}/api`,
